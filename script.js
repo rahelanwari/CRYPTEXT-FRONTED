@@ -562,6 +562,28 @@
                 messageInput.value = ''; // Clear the input field
             }
         });
+async function createAccount(cryptext_id, display_name, mnemonic_phrase) {
+  const response = await fetch('https://cryptext-backend.onrender.com/api/users', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      cryptext_id,
+      display_name,
+      mnemonic_phrase
+    })
+  });
+
+  const data = await response.json();
+
+  if (data.success) {
+    alert('Account succesvol aangemaakt!');
+    localStorage.setItem('user_id', data.user.id); // optioneel opslaan
+    // window.location.href = '/home.html'; ← optioneel redirect
+  } else {
+    alert('Fout bij aanmaken account: ' + data.error);
+  }
+}
+
 
         // Add message to chat
         function addMessageToChat(message, isSent = true) {
