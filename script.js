@@ -563,7 +563,7 @@
             }
         });
 async function createAccount(cryptext_id, display_name, mnemonic_phrase) {
-  const response = await fetch('https://cryptext-backend.onrender.com/api/users', {
+  const response = await fetch('https://cryptext-database-backend.onrender.com/api/users', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
