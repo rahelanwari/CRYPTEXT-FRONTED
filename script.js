@@ -405,24 +405,45 @@
             showScreen('chat');
         });
 
-        recoverBtn.addEventListener('click', () => {
-            const inputPhrase = getRecoveryInputs();
-            if (validateRecoveryPhrase(inputPhrase)) {
-                const userId = deriveUserIdFromPhrase(inputPhrase);
-                currentUser.id = userId;
-                currentUser.recoveryPhrase = inputPhrase;
-                currentUser.displayName = 'Recovered User';
-                saveUserToLocalStorage();
-                chatUserIdDisplay.textContent = `@${currentUser.id}`;
-                chatDisplayNameElement.textContent = currentUser.displayName;
-                recoveryErrorAlert.classList.add('hidden');
-                showSearchBar(); // Show the search bar
-                showDarkModeToggle(); // Show the dark mode toggle
-                showScreen('chat');
-            } else {
-                recoveryErrorAlert.classList.remove('hidden');
-            }
+        // ...bestaande code...
+
+recoverBtn.addEventListener('click', async () => {
+    const inputPhrase = getRecoveryInputs();
+    const phrase = inputPhrase.join(' ');
+
+    // Backend check
+    try {
+        const response = await fetch('https://cryptext-backend.onrender.com/api/auth', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ phrase })
         });
+        const data = await response.json();
+
+        if (data.success) {
+            // Login OK, voer je bestaande login flow uit
+            const userId = deriveUserIdFromPhrase(inputPhrase);
+            currentUser.id = userId;
+            currentUser.recoveryPhrase = inputPhrase;
+            currentUser.displayName = 'Recovered User';
+            saveUserToLocalStorage();
+            chatUserIdDisplay.textContent = `@${currentUser.id}`;
+            chatDisplayNameElement.textContent = currentUser.displayName;
+            recoveryErrorAlert.classList.add('hidden');
+            showSearchBar();
+            showDarkModeToggle();
+            showScreen('chat');
+        } else {
+            alert("Phrase klopt niet (volgens database)");
+        }
+    } catch (err) {
+        alert("Er ging iets mis met de backend-check.");
+        console.error(err);
+    }
+});
+// ...bestaande code...
 
         backToWelcomeBtn.addEventListener('click', () => {
             showScreen('welcome');
